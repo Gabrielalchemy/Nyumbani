@@ -35,7 +35,13 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
     });
 
     const result = await sendSms(config.OWNER_PHONE, sms.otp(code));
-    return reply.send({ ok: true, simulated: result.simulated });
+    // DX: when SMS is simulated (no AT creds) and we're in dev,
+    // surface the code so the dashboard is still testable.
+    return reply.send({
+      ok: true,
+      simulated: result.simulated,
+      ...(result.simulated && config.NODE_ENV === "development" ? { devCode: code } : {}),
+    });
   });
 
   app.post<{ Body: { code: string; phone?: string } }>("/auth/verify-otp", async (req, reply) => {

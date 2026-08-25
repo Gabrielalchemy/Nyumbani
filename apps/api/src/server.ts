@@ -14,6 +14,7 @@ import { ussdRoutes } from "./modules/ussd/handler.js";
 import { paymentWebhookRoutes } from "./modules/payments/webhook.js";
 import { adminInsightRoutes } from "./modules/insights/documents.js";
 import { adminReportRoutes } from "./modules/insights/reports.js";
+import { webOrderRoutes } from "./modules/orders/web.js";
 
 const app = Fastify({
   logger: isProd
@@ -59,6 +60,7 @@ app.get("/health", async () => {
 // ── Public API ────────────────────────────────────────────────────────
 await app.register(authRoutes, { prefix: "/api" });
 await app.register(publicProductRoutes, { prefix: "/api" });
+await app.register(webOrderRoutes, { prefix: "/api" });
 
 // ── Admin API (JWT-guarded) ───────────────────────────────────────────
 await app.register(adminProductRoutes, { prefix: "/api/admin" });
