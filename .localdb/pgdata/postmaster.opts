@@ -1,0 +1,1 @@
+/usr/bin/postgres "-D" "/home/shisui/Projects/nyumbani/.localdb/pgdata" "-p" "5433" "-k" "/home/shisui/Projects/nyumbani/.localdb"

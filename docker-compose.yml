@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nyumbani
+      POSTGRES_PASSWORD: nyumbani
+      POSTGRES_DB: nyumbani
+    ports:
+      - "5433:5432"
+    volumes:
+      - nyumbani_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nyumbani"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  nyumbani_pgdata:

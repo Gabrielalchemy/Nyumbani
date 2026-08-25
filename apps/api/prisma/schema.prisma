@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                String          @id @default(cuid())
+  name              String
+  description       String?
+  category          String?
+  priceKes          Int
+  stockQty          Int             @default(0)
+  lowStockThreshold Int             @default(3)
+  imageUrl          String?
+  visible           Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  orderItems     OrderItem[]
+  stockMovements StockMovement[]
+
+  @@index([visible, category])
+}
+
+model Customer {
+  id      String  @id @default(cuid())
+  phone   String  @unique
+  name    String?
+  orders  Order[]
+  createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  IN_PRODUCTION
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum Channel {
+  USSD
+  WEB
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  reference      String      @unique
+  customerId     String
+  status         OrderStatus @default(PENDING_PAYMENT)
+  channel        Channel     @default(USSD)
+  totalKes       Int
+  depositPaidKes Int         @default(0)
+  note           String?
+
+  customer Customer  @relation(fields: [customerId], references: [id])
+  items    OrderItem[]
+  payments Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  qty       Int
+  unitPriceKes Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+}
+
+model Payment {
+  id           String        @id @default(cuid())
+  orderId      String
+  providerRef  String?       @unique
+  method       String        @default("MPESA")
+  amountKes    Int
+  status       PaymentStatus @default(INITIATED)
+  raw          Json?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model StockMovement {
+  id        String   @id @default(cuid())
+  productId String
+  delta     Int
+  reason    String
+  note      String?
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, createdAt])
+}
+
+enum DocStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+model Document {
+  id         String    @id @default(cuid())
+  filename   String
+  mimeType   String
+  sizeBytes  Int
+  kind       String    @default("invoice")
+  status     DocStatus @default(PENDING)
+  extracted  Json?
+  error      String?
+  createdAt  DateTime  @default(now())
+
+  @@index([status, createdAt])
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  periodLabel String
+  narrative   String
+  metrics     Json
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model OtpCode {
+  id         String    @id @default(cuid())
+  phone      String
+  code       String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([phone, consumedAt])
+}
+
+enum UssdScreen {
+  MAIN
+  PRODUCT_LIST
+  PRODUCT_DETAIL
+  ORDER_QTY
+  ORDER_CONFIRM
+  ORDER_PAID_PROMPT
+  MY_ORDERS
+  CONTACT
+}
+
+model UssdSession {
+  id        String     @id
+  phone     String
+  screen    UssdScreen @default(MAIN)
+  data      Json?
+  updatedAt DateTime   @updatedAt
+}
