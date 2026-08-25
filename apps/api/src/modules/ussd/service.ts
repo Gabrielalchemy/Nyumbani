@@ -13,6 +13,8 @@ interface SessionData {
   page?: number;
   productId?: string;
   qty?: number;
+  /** remembered so "Back" returns you where you were */
+  lastPage?: number;
 }
 
 interface ScreenResult {
@@ -104,7 +106,7 @@ async function productList(page: number): Promise<ScreenResult> {
   };
 }
 
-async function productDetail(productId: string): Promise<ScreenResult> {
+async function productDetail(productId: string, lastPage = 0): Promise<ScreenResult> {
   const p = await prisma.product.findUnique({ where: { id: productId } });
   if (!p || !p.visible) {
     return { ...mainMenu(), text: `Sorry, that item is unavailable.\n\n${mainMenu().text}` };
@@ -123,16 +125,16 @@ async function productDetail(productId: string): Promise<ScreenResult> {
   if (p.stockQty > 0) lines.push("1. Order this");
   lines.push(`${BACK}. Back`, `${HOME}. Main menu`);
 
-  return { screen: "PRODUCT_DETAIL", data: { productId }, end: false, text: lines.join("\n") };
+  return { screen: "PRODUCT_DETAIL", data: { productId, lastPage }, end: false, text: lines.join("\n") };
 }
 
-async function orderQtyPrompt(productId: string, error?: string): Promise<ScreenResult> {
+async function orderQtyPrompt(productId: string, lastPage = 0, error?: string): Promise<ScreenResult> {
   const p = await prisma.product.findUnique({ where: { id: productId } });
   if (!p) return mainMenu();
 
   return {
     screen: "ORDER_QTY",
-    data: { productId },
+    data: { productId, lastPage },
     end: false,
     text: [error, "", `${p.name} (${kes(p.priceKes)} each)`, `Available: ${p.stockQty}`, "", "Enter quantity:"]
       .filter(Boolean)
@@ -140,14 +142,14 @@ async function orderQtyPrompt(productId: string, error?: string): Promise<Screen
   };
 }
 
-async function orderConfirm(productId: string, qty: number): Promise<ScreenResult> {
+async function orderConfirm(productId: string, qty: number, lastPage = 0): Promise<ScreenResult> {
   const p = await prisma.product.findUnique({ where: { id: productId } });
   if (!p) return mainMenu();
 
   const total = p.priceKes * qty;
   return {
     screen: "ORDER_CONFIRM",
-    data: { productId, qty },
+    data: { productId, qty, lastPage },
     end: false,
     text: [
       "Confirm your order:",
@@ -320,42 +322,46 @@ async function route(
 
       const idx = parseInt(input, 10);
       if (!Number.isNaN(idx) && idx >= 1 && idx <= visible.length) {
-        return productDetail(visible[idx - 1].id);
+        return productDetail(visible[idx - 1].id, page);
       }
       return productList(page);
     }
 
     case "PRODUCT_DETAIL": {
       const pid = data.productId!;
-      if (input === "1") return orderQtyPrompt(pid);
-      if (input === BACK) return productList(data.page ?? 0);
+      const page = data.lastPage ?? 0;
+      if (input === "1") return orderQtyPrompt(pid, page);
+      if (input === BACK) return productList(page);
       if (input === HOME) return mainMenu();
-      return productDetail(pid);
+      return productDetail(pid, page);
     }
 
     case "ORDER_QTY": {
       const pid = data.productId!;
+      const page = data.lastPage ?? 0;
       if (input === HOME) return mainMenu();
-      if (input === BACK) return productDetail(pid);
+      if (input === BACK) return productDetail(pid, page);
 
       const qty = parseInt(input, 10);
-      if (Number.isNaN(qty) || qty < 1) return orderQtyPrompt(pid, "Please enter a valid quantity.");
+      if (Number.isNaN(qty) || qty < 1)
+        return orderQtyPrompt(pid, page, "Please enter a valid quantity.");
 
       const p = await prisma.product.findUnique({ where: { id: pid } });
       if (!p) return mainMenu();
       if (qty > p.stockQty)
-        return orderQtyPrompt(pid, `Sorry, only ${p.stockQty} available.`);
+        return orderQtyPrompt(pid, page, `Sorry, only ${p.stockQty} available.`);
 
-      return orderConfirm(pid, qty);
+      return orderConfirm(pid, qty, page);
     }
 
     case "ORDER_CONFIRM": {
       const { productId: pid, qty } = data;
+      const page = data.lastPage ?? 0;
       if (input === HOME) return mainMenu();
-      if (input === BACK) return productDetail(pid!);
+      if (input === BACK) return productDetail(pid!, page);
       if (input === "1") return confirmOrder(phone, pid!, qty!, true);
       if (input === "2") return confirmOrder(phone, pid!, qty!, false);
-      return orderConfirm(pid!, qty!);
+      return orderConfirm(pid!, qty!, page);
     }
 
     case "MY_ORDERS":
