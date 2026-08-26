@@ -42,9 +42,17 @@ const envSchema = z.object({
   AT_API_KEY: z.string().default(""),
   AT_SENDER_ID: z.string().default(""),
   AT_ENVIRONMENT: z.enum(["sandbox", "production"]).default("sandbox"),
-  AT_CHECKOUT_PRODUCT: z.string().default("DefaultProduct"),
 
   GEMINI_API_KEY: z.string().default(""),
+
+  PUBLIC_BASE_URL: z.string().default(""),
+
+  // Safaricom Daraja (M-Pesa Express / STK push) — sandbox defaults work out of the box
+  DARAJA_ENV: z.enum(["sandbox", "production"]).default("sandbox"),
+  DARAJA_CONSUMER_KEY: z.string().default(""),
+  DARAJA_CONSUMER_SECRET: z.string().default(""),
+  DARAJA_SHORTCODE: z.string().default("174379"),
+  DARAJA_PASSKEY: z.string().default("bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"),
 });
 
 export const config = envSchema.parse(process.env);

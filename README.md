@@ -23,7 +23,8 @@ Every sale decrements stock atomically; crossing a product's alert threshold tex
 Fastify API ──── Prisma ──── PostgreSQL      React 19 + Vite SPA
    │                                             (served statically
    ├─ POST /ussd/callback      AT USSD           by Fastify in prod)
-   ├─ POST /webhooks/payments  AT payments
+   ├─ POST /webhooks/payments  AT payments (legacy)
+   ├─ POST /webhooks/mpesa     Daraja STK result
    ├─ GET  /api/products       public JSON
    └─ /api/admin/*             JWT (SMS-OTP)
 ```
@@ -32,13 +33,13 @@ One container serves everything → deploys as a single isolated instance per bu
 
 ## Stack
 
-Fastify 5 · Prisma 6 · PostgreSQL 16 · React 19 · Vite · Tailwind v4 · Framer Motion · TanStack Query · Gemini 2.5 Flash (`@ai-sdk/google`)
+Fastify 5 · Prisma 6 · PostgreSQL 16 · React 19 · Vite · Tailwind v4 · Framer Motion · TanStack Query · Gemini 2.5 Flash (`@ai-sdk/google`) · Safaricom Daraja (M-Pesa Express STK)
 
 ## Local development
 
 ```bash
 pnpm install
-cp .env.example .env            # then apps/api/.env for the API
+cp .env.example .env            # single root .env — the API walks up to find it
 
 # Postgres: either…
 docker compose up -d db         # …or any local postgres; set DATABASE_URL accordingly
@@ -48,8 +49,22 @@ pnpm db:seed
 pnpm dev                        # api :3000 + web :5173 (vite proxies /api)
 ```
 
+### Sandbox testing with ngrok
+
+Africa's Talking needs public HTTPS callbacks. With your AT sandbox credentials in `.env`:
+
+```bash
+ngrok http 3000                 # copy the https URL, then…
+# …set PUBLIC_BASE_URL=https://<your-sub>.ngrok-free.app in .env and restart the API.
+```
+
+On boot the API logs paste-ready URLs for the AT portal:
+
+- **USSD callback URL:** `https://<host>/ussd/callback`
+- **Payments notification URL:** `https://<host>/webhooks/payments`
+
 ### Simulated integrations
-With no `AT_API_KEY` / `GEMINI_API_KEY`, all Africa's Talking calls and AI calls are logged and simulated with deterministic fake references — the entire flow (USSD → order → payment webhook → SMS copy) is testable offline. In development the login OTP is returned in the API response so the dashboard can be tested without a phone.
+With no `AT_API_KEY` / `GEMINI_API_KEY` / `DARAJA_CONSUMER_KEY`, all Africa's Talking, AI and M-Pesa calls are logged and simulated with deterministic fake references — the entire flow (USSD → order → STK push → webhook → SMS copy) is testable offline. In development the login OTP is returned in the API response so the dashboard can be tested without a phone.
 
 ### Testing USSD locally
 ```bash
@@ -69,21 +84,24 @@ curl -X POST localhost:3000/ussd/callback \
 | `JWT_SECRET` | random 32+ chars |
 | `BUSINESS_NAME` / `BUSINESS_TAGLINE` | branding across USSD/SMS/web |
 | `OWNER_PHONE` | E.164 owner number — receives alerts, OTP logins |
+| `PUBLIC_BASE_URL` | Public https base URL (e.g. ngrok) — used to log AT callback URLs at boot |
 | `USSD_SERVICE_CODE` | your AT shortcode |
 | `AT_USERNAME` / `AT_API_KEY` / `AT_SENDER_ID` | production AT credentials |
 | `AT_ENVIRONMENT` | `sandbox` or `production` |
-| `AT_CHECKOUT_PRODUCT` | your AT payments product name |
+| `DARAJA_ENV` | `sandbox` or `production` |
+| `DARAJA_CONSUMER_KEY` / `DARAJA_CONSUMER_SECRET` | [Daraja](https://developer.safaricom.co.ke) app credentials (Lipa na M-Pesa Online) |
+| `DARAJA_SHORTCODE` / `DARAJA_PASSKEY` | paybill/till + passkey (sandbox defaults pre-set) |
 | `GEMINI_API_KEY` | enables invoice extraction + report narration |
 
-3. Point the AT portal callbacks at:
-   - **USSD callback URL:** `https://<your-host>/ussd/callback`
-   - **Payments notification URL:** `https://<your-host>/webhooks/payments`
+3. Point the provider portals at (the API logs these on boot when `PUBLIC_BASE_URL` is set):
+   - **AT USSD callback URL:** `https://<your-host>/ussd/callback`
+   - **Daraja STK callback URL:** `https://<your-host>/webhooks/mpesa`
 
 ## Marketplace packaging checklist
 
 - ✅ Single Docker image, healthcheck endpoint `/health`
 - ✅ Configurable entirely via env vars; database declared (PostgreSQL)
-- ✅ Built on AT products: **USSD, SMS, Mobile Checkout (M-Pesa)**
+- ✅ Built on AT products: **USSD, SMS** — plus **Safaricom Daraja** for M-Pesa deposits (AT Mobile Checkout was retired)
 - ✅ Reusable per-business deployment (single-tenant by design)
 - ⬜ Push image to AT container registry & submit via *Create Your Own Plugin*
   (name `nyumbani`, slug, descriptions, `logo.svg`, pricing plans, industry tag)

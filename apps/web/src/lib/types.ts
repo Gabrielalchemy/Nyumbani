@@ -10,6 +10,13 @@ export interface Product {
   visible?: boolean;
 }
 
+export interface PublicConfig {
+  businessName: string;
+  businessTagline: string;
+  ussdServiceCode: string;
+  ownerPhone: string;
+}
+
 export interface OrderItem {
   id: string;
   productId: string;

@@ -3,7 +3,7 @@ import { config } from "../../config.js";
 import { kes } from "../../lib/money.js";
 import { STATUS_LABELS } from "../../lib/templates.js";
 import { placeOrder } from "../orders/service.js";
-import { mobileCheckout } from "../../lib/at.js";
+import { stkPush } from "../../lib/mpesa.js";
 
 const PAGE_SIZE = 4;
 const BACK = "9";
@@ -226,18 +226,20 @@ async function confirmOrder(
       };
     }
 
-    // Trigger M-Pesa deposit push
-    const checkout = await mobileCheckout({
+    // Trigger M-Pesa deposit push (Daraja STK)
+    const checkout = await stkPush({
       phoneNumber: phone,
       amountKes: order.totalKes,
-      metadata: { orderRef: order.reference, purpose: "deposit" },
+      accountReference: order.reference,
+      description: "Order deposit",
+      callbackUrl: `${config.PUBLIC_BASE_URL.replace(/\/+$/, "")}/webhooks/mpesa`,
     });
 
-    if (checkout.ok && checkout.data?.transactionId) {
+    if (checkout.ok && checkout.checkoutRequestId) {
       await prisma.payment.create({
         data: {
           orderId: order.id,
-          providerRef: checkout.data.transactionId,
+          providerRef: checkout.checkoutRequestId,
           amountKes: order.totalKes,
           method: "MPESA",
           status: "INITIATED",
@@ -250,7 +252,7 @@ async function confirmOrder(
     return {
       screen: "CONTACT",
       end: true,
-      text: checkout.ok && checkout.data?.transactionId
+      text: checkout.ok && checkout.checkoutRequestId
         ? `Asante! Order ${order.reference} received.\nTotal: ${kes(order.totalKes)}. Check your phone for the M-Pesa prompt and enter your PIN.`
         : `Asante! Order ${order.reference} received.\nPayment prompt couldn't be sent — we'll contact you shortly.`,
     };

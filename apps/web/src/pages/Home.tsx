@@ -1,16 +1,21 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Hammer, PhoneCall } from "lucide-react";
 import { api, kes } from "../lib/api";
+import { formatPhone, usePublicConfig } from "../lib/config";
 import type { Product } from "../lib/types";
 import { Reveal, Stagger, StaggerItem, EASE } from "../components/motion";
 import { OrderDialog, ProductImage, TrustStrip, grainStyle } from "../components/storefront";
 
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
-  window.addEventListener("scroll", () => setScrolled(window.scrollY > 12), { passive: true });
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <motion.header
@@ -216,10 +221,11 @@ function Shop({
 }
 
 function HowToOrder() {
+  const cfg = usePublicConfig();
   const steps = [
     {
       n: "01",
-      title: "Dial *384*1234#",
+      title: `Dial ${cfg.ussdServiceCode || "our USSD code"}`,
       body: "Any phone — feature phone or smartphone. Browse the full catalogue right inside the menu.",
     },
     {
@@ -302,6 +308,7 @@ function Craft() {
 }
 
 function Footer() {
+  const cfg = usePublicConfig();
   return (
     <footer className="border-t border-sand-200">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-10 text-sm text-muted sm:flex-row sm:px-8">
@@ -309,9 +316,14 @@ function Footer() {
           <span className="flex size-8 items-center justify-center rounded-lg bg-ink text-clay-300">
             <Hammer size={14} />
           </span>
-          <span className="font-display font-semibold text-ink">Nyumbani</span>
+          <span className="font-display font-semibold text-ink">{cfg.businessName}</span>
         </div>
-        <p>Orders & enquiries: +254 700 000 000 · Dial *384*1234#</p>
+        <p>
+          {cfg.ownerPhone
+            ? `Orders & enquiries: ${formatPhone(cfg.ownerPhone)}`
+            : "Orders & enquiries: talk to us"}
+          {cfg.ussdServiceCode ? ` · Dial ${cfg.ussdServiceCode}` : ""}
+        </p>
         <p className="text-xs">
           Powered by{" "}
           <a

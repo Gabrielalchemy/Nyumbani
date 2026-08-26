@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Hammer, PhoneCall, ShieldCheck, Smartphone, X } from "lucide-react";
 import type { Product } from "../lib/types";
 import { api, kes } from "../lib/api";
+import { usePublicConfig } from "../lib/config";
 import { Button, Input, Spinner } from "./ui";
 import { EASE } from "./motion";
 
@@ -58,18 +59,51 @@ export function OrderDialog({
   const [phone, setPhone] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [orderRef, setOrderRef] = useState<string | null>(null);
+  const [paidStatus, setPaidStatus] = useState<boolean>(false);
+  const cfg = usePublicConfig();
 
   async function submit() {
     if (!product) return;
     setState("loading");
     try {
-      const res = await api.post<{ message: string }>("/api/orders/web", {
+      const res = await api.post<{
+        reference: string;
+        message: string;
+        checkoutPushed: boolean;
+      }>("/api/orders/web", {
         productId: product.id,
         qty,
         phone,
       });
+      setOrderRef(res.reference);
       setMessage(res.message);
       setState("done");
+
+      if (res.checkoutPushed && res.reference) {
+        let count = 0;
+        const interval = setInterval(async () => {
+          count++;
+          if (count > 20) {
+            clearInterval(interval);
+            return;
+          }
+          try {
+            const status = await api.get<{ status: string; depositPaidKes: number }>(
+              `/api/orders/lookup/${res.reference}`
+            );
+            if (status.depositPaidKes > 0 || status.status === "PAID") {
+              setPaidStatus(true);
+              setMessage(
+                `Payment confirmed via M-Pesa! Order ${res.reference} is now confirmed and being processed.`
+              );
+              clearInterval(interval);
+            }
+          } catch {
+            /* continue polling silently */
+          }
+        }, 3000);
+      }
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Could not place order");
       setState("error");
@@ -188,8 +222,8 @@ export function OrderDialog({
                     <PhoneCall size={15} className="mt-0.5 shrink-0 text-clay-700" />
                     <span>
                       Prefer your keypad? Dial{" "}
-                      <strong className="tracking-wider">*384*1234#</strong> on any phone to order
-                      without internet.
+                      <strong className="tracking-wider">{cfg.ussdServiceCode}</strong> on any phone
+                      to order without internet.
                     </span>
                   </div>
                 </>

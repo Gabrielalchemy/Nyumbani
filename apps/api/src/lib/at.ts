@@ -39,17 +39,20 @@ export async function sendSms(to: string | string[], message: string): Promise<A
     return { ok: true, simulated: true };
   }
   try {
-    const body: Record<string, unknown> = {
+    const body = new URLSearchParams({
       username: config.AT_USERNAME,
       to: recipients,
       message,
-    };
-    if (config.AT_SENDER_ID) body.from = config.AT_SENDER_ID;
+    });
+    if (config.AT_SENDER_ID) body.set("from", config.AT_SENDER_ID);
 
     const res = await fetch(`${BASE_URL}/messaging`, {
       method: "POST",
-      headers: headers(),
-      body: JSON.stringify(body),
+      headers: {
+        apiKey: config.AT_API_KEY,
+        Accept: "application/json",
+      },
+      body,
     });
     const data = (await res.json()) as SmsResponse;
     if (!res.ok) {
@@ -63,48 +66,3 @@ export async function sendSms(to: string | string[], message: string): Promise<A
   }
 }
 
-// ── Mobile Money Checkout (M-Pesa STK-style push) ─────────────────────
-
-interface CheckoutResponse {
-  status?: string;
-  transactionId?: string;
-  description?: string;
-}
-
-export async function mobileCheckout(params: {
-  phoneNumber: string;
-  amountKes: number;
-  productName?: string;
-  metadata?: Record<string, string>;
-}): Promise<AtResult<CheckoutResponse>> {
-  if (!atConfigured()) {
-    const fakeRef = `SIM-${Date.now().toString(36).toUpperCase()}`;
-    console.log(
-      `[AT:simulated checkout] ${params.phoneNumber} ${params.amountKes} KES → ref ${fakeRef}`
-    );
-    return { ok: true, data: { status: "Success", transactionId: fakeRef }, simulated: true };
-  }
-  try {
-    const res = await fetch(`${BASE_URL}/mobile/checkout`, {
-      method: "POST",
-      headers: headers(),
-      body: JSON.stringify({
-        username: config.AT_USERNAME,
-        productName: params.productName ?? config.AT_CHECKOUT_PRODUCT,
-        phoneNumber: params.phoneNumber,
-        currencyCode: "KES",
-        amount: params.amountKes,
-        metadata: params.metadata ?? {},
-      }),
-    });
-    const data = (await res.json()) as CheckoutResponse;
-    if (!res.ok || (data.status && data.status !== "Success")) {
-      console.error("[AT checkout error]", res.status, data);
-      return { ok: false, error: data.description ?? "Checkout failed", simulated: false };
-    }
-    return { ok: true, data, simulated: false };
-  } catch (err) {
-    console.error("[AT checkout exception]", err);
-    return { ok: false, error: "Checkout network error", simulated: false };
-  }
-}

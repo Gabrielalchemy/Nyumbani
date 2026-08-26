@@ -2,8 +2,9 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "../../lib/db.js";
 import { placeOrder } from "./service.js";
-import { mobileCheckout } from "../../lib/at.js";
+import { stkPush } from "../../lib/mpesa.js";
 import { normalizeKenyanPhone } from "../../lib/phone.js";
+import { config } from "../../config.js";
 
 const webOrderSchema = z.object({
   productId: z.string().min(1),
@@ -36,17 +37,19 @@ export async function webOrderRoutes(app: FastifyInstance): Promise<void> {
         depositPrompted: true,
       });
 
-      const checkout = await mobileCheckout({
+      const checkout = await stkPush({
         phoneNumber: phone,
         amountKes: order.totalKes,
-        metadata: { orderRef: order.reference, purpose: "deposit", channel: "web" },
+        accountReference: order.reference,
+        description: "Order deposit",
+        callbackUrl: `${config.PUBLIC_BASE_URL.replace(/\/+$/, "")}/webhooks/mpesa`,
       });
 
-      if (checkout.ok && checkout.data?.transactionId) {
+      if (checkout.ok && checkout.checkoutRequestId) {
         await prisma.payment.create({
           data: {
             orderId: order.id,
-            providerRef: checkout.data.transactionId,
+            providerRef: checkout.checkoutRequestId,
             amountKes: order.totalKes,
             method: "MPESA",
             status: "INITIATED",
@@ -74,4 +77,30 @@ export async function webOrderRoutes(app: FastifyInstance): Promise<void> {
       return reply.code(409).send({ error: msg });
     }
   });
+
+  /** Public lookup for web storefront status polling and customer tracking. */
+  app.get<{ Params: { ref: string } }>("/orders/lookup/:ref", async (req, reply) => {
+    const ref = req.params.ref.trim().toUpperCase();
+    const order = await prisma.order.findUnique({
+      where: { reference: ref },
+      select: {
+        reference: true,
+        status: true,
+        totalKes: true,
+        depositPaidKes: true,
+        createdAt: true,
+        items: {
+          select: {
+            qty: true,
+            unitPriceKes: true,
+            product: { select: { name: true } },
+          },
+        },
+      },
+    });
+
+    if (!order) return reply.code(404).send({ error: "Order not found" });
+    return reply.send(order);
+  });
 }
+
