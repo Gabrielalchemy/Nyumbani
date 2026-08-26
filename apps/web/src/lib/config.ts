@@ -5,8 +5,8 @@ import type { PublicConfig } from "./types";
 const FALLBACK: PublicConfig = {
   businessName: "Nyumbani",
   businessTagline: "Quality goods, made to order",
-  ussdServiceCode: "",
-  ownerPhone: "",
+  ussdServiceCode: "*384*38239#",
+  ownerPhone: "+254715639940",
 };
 
 /** Public branding config from the API; falls back to neutral values while loading. */

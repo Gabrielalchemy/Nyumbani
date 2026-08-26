@@ -225,7 +225,7 @@ function HowToOrder() {
   const steps = [
     {
       n: "01",
-      title: `Dial ${cfg.ussdServiceCode || "our USSD code"}`,
+      title: `Dial ${cfg.ussdServiceCode || "*384*38239#"}`,
       body: "Any phone — feature phone or smartphone. Browse the full catalogue right inside the menu.",
     },
     {
