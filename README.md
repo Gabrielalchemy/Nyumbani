@@ -69,7 +69,7 @@ With no `AT_API_KEY` / `GEMINI_API_KEY` / `DARAJA_CONSUMER_KEY`, all Africa's Ta
 ### Testing USSD locally
 ```bash
 curl -X POST localhost:3000/ussd/callback \
-  -d "sessionId=s1&serviceCode=*384*1234#&phoneNumber=+254711223344&text="
+  -d "sessionId=s1&serviceCode=*384*38239#&phoneNumber=+254711223344&text="
 # respond with text=1 (browse), 1*2 (item), 1*2*1 (order), 1*2*1*2 (qty), 1*2*1*2*1 (pay)
 ```
 

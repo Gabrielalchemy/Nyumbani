@@ -36,7 +36,7 @@ const envSchema = z.object({
   BUSINESS_NAME: z.string().min(1).default("Nyumbani"),
   BUSINESS_TAGLINE: z.string().default("Quality goods, made to order"),
   OWNER_PHONE: z.string().default("+254700000000"),
-  USSD_SERVICE_CODE: z.string().default("*384*0000#"),
+  USSD_SERVICE_CODE: z.string().default("*384*38239#"),
 
   AT_USERNAME: z.string().default("sandbox"),
   AT_API_KEY: z.string().default(""),
