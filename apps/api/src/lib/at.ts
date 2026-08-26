@@ -50,14 +50,27 @@ export async function sendSms(to: string | string[], message: string): Promise<A
       method: "POST",
       headers: {
         apiKey: config.AT_API_KEY,
+        "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json",
       },
       body,
     });
-    const data = (await res.json()) as SmsResponse;
-    if (!res.ok) {
-      console.error("[AT SMS error]", res.status, data);
-      return { ok: false, error: `SMS failed (${res.status})`, simulated: false };
+
+    const rawText = await res.text();
+    let data: SmsResponse | undefined;
+    try {
+      data = JSON.parse(rawText) as SmsResponse;
+    } catch {
+      /* Response from AT was not JSON (e.g. gateway error page) */
+    }
+
+    if (!res.ok || !data) {
+      console.error(`[AT SMS error ${res.status}]`, rawText);
+      return {
+        ok: false,
+        error: data?.SMSMessageData?.Recipients ? "SMS sending failed" : rawText || `SMS failed (${res.status})`,
+        simulated: false,
+      };
     }
     return { ok: true, data, simulated: false };
   } catch (err) {
