@@ -1,0 +1,115 @@
+name: Nyumbani CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  # ── STAGE 1: Code Validation & Type Check ─────────────────────────────
+  validate:
+    name: 🔍 Type-Check & Build Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 11
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm --filter @nyumbani/api exec prisma generate
+
+      - name: Build All Monorepo Packages
+        run: pnpm -r build
+
+  # ── STAGE 2: Automated Unit & Integration Tests ───────────────────────
+  test:
+    name: 🧪 Unit & Integration Tests
+    needs: validate
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: nyumbani
+          POSTGRES_PASSWORD: nyumbani_test_password
+          POSTGRES_DB: nyumbani_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://nyumbani:nyumbani_test_password@localhost:5433/nyumbani_test
+      JWT_SECRET: ci-test-secret-key-32-chars-long-security
+      PUBLIC_BASE_URL: http://localhost:3000
+      USSD_SERVICE_CODE: "*384*38239#"
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 11
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Prisma Migrations
+        run: pnpm --filter @nyumbani/api exec prisma migrate deploy
+
+      - name: Execute Vitest Suite
+        run: pnpm --filter @nyumbani/api test
+
+  # ── STAGE 3: Production Deployment ────────────────────────────────────
+  deploy:
+    name: 🚀 Deploy to Production (Railway)
+    needs: test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Trigger Railway Deploy Webhook
+        if: ${{ secrets.RAILWAY_DEPLOY_HOOK != '' }}
+        run: |
+          curl -X POST "${{ secrets.RAILWAY_DEPLOY_HOOK }}"
+

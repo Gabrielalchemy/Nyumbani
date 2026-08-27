@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Nyumbani — USSD storefront, order desk & smart inventory for African makers",
   "scripts": {
-    "dev": "pnpm --parallel --filter ./apps/* dev",
+    "dev": "pnpm --parallel --filter \"@nyumbani/*\" dev",
     "dev:api": "pnpm --filter @nyumbani/api dev",
     "dev:web": "pnpm --filter @nyumbani/web dev",
     "db:up": "docker compose up -d db",
