@@ -19,11 +19,18 @@ export default function Login() {
   async function sendCode() {
     setBusy(true);
     setError(null);
+
     try {
+      // Use your built-in hook directly!
       const res = await requestOtp(phone || undefined);
+
       setStage("code");
-      if (res.simulated && res.devCode) {
+
+      // Optional chaining just to be safe
+      if (res?.simulated && res?.devCode) {
         setHint(`Dev mode — your code is ${res.devCode}`);
+      } else {
+        setHint("Code sent to your phone!");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to send code");
@@ -58,8 +65,12 @@ export default function Login() {
             <Hammer size={18} />
           </span>
           <div>
-            <h1 className="font-display text-lg font-semibold">Nyumbani Dashboard</h1>
-            <p className="text-xs text-muted">Owner access · secured by SMS code</p>
+            <h1 className="font-display text-lg font-semibold">
+              Nyumbani Dashboard
+            </h1>
+            <p className="text-xs text-muted">
+              Owner access · secured by SMS code
+            </p>
           </div>
         </div>
 
@@ -71,7 +82,12 @@ export default function Login() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
-            <Button size="lg" className="w-full" onClick={sendCode} disabled={busy}>
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={sendCode}
+              disabled={busy}
+            >
               <KeyRound size={16} /> Send login code by SMS
             </Button>
           </div>
@@ -89,9 +105,16 @@ export default function Login() {
               autoFocus
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-              onKeyDown={(e) => e.key === "Enter" && code.length === 6 && confirm()}
+              onKeyDown={(e) =>
+                e.key === "Enter" && code.length === 6 && confirm()
+              }
             />
-            <Button size="lg" className="w-full" onClick={confirm} disabled={busy || code.length !== 6}>
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={confirm}
+              disabled={busy || code.length !== 6}
+            >
               Sign in
             </Button>
             <button
