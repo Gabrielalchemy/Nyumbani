@@ -16,6 +16,46 @@ const GRAIN_PAIRS: [string, string][] = [
   ["#e2b183", "#93531f"],
 ];
 
+const PRODUCT_IMAGE_FALLBACKS: Record<string, string> = {
+  "cutting board": "/images/teak_cutting_board.jpg",
+  "teak": "/images/teak_cutting_board.jpg",
+  "dining chair": "/images/carved_dining_chair.jpg",
+  "dining": "/images/carved_dining_chair.jpg",
+  "chair": "/images/carved_dining_chair.jpg",
+  "bookshelf": "/images/industrial_bookshelf.jpg",
+  "shelf": "/images/floating_timber_shelves.jpg",
+  "shelves": "/images/floating_timber_shelves.jpg",
+  "floating": "/images/floating_timber_shelves.jpg",
+  "bench": "/images/wrought_iron_bench.jpg",
+  "garden": "/images/wrought_iron_bench.jpg",
+  "coffee table": "/images/mvule_coffee_table.jpg",
+  "mvule": "/images/mvule_coffee_table.jpg",
+  "table": "/images/mvule_coffee_table.jpg",
+};
+
+export function resolveProductImageUrl(product: {
+  name?: string;
+  imageUrl?: string | null;
+  category?: string | null;
+}): string | null {
+  if (product.imageUrl && product.imageUrl.trim() !== "") {
+    return product.imageUrl;
+  }
+  const lowerName = (product.name || "").toLowerCase();
+  for (const [key, path] of Object.entries(PRODUCT_IMAGE_FALLBACKS)) {
+    if (lowerName.includes(key)) {
+      return path;
+    }
+  }
+  const lowerCategory = (product.category || "").toLowerCase();
+  for (const [key, path] of Object.entries(PRODUCT_IMAGE_FALLBACKS)) {
+    if (lowerCategory.includes(key)) {
+      return path;
+    }
+  }
+  return null;
+}
+
 export function grainStyle(i: number): React.CSSProperties {
   const [from, to] = GRAIN_PAIRS[i % GRAIN_PAIRS.length];
   return { "--tw-grain-from": from, "--tw-grain-to": to } as React.CSSProperties;
@@ -30,12 +70,16 @@ export function ProductImage({
   index: number;
   className?: string;
 }) {
-  if (product.imageUrl) {
+  const [imgError, setImgError] = useState(false);
+  const imageSrc = !imgError ? resolveProductImageUrl(product) : null;
+
+  if (imageSrc) {
     return (
       <div className={`relative overflow-hidden bg-sand-100 ${className}`}>
         <img
-          src={product.imageUrl}
+          src={imageSrc}
           alt={product.name}
+          onError={() => setImgError(true)}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/35 to-transparent" />

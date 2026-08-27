@@ -382,31 +382,45 @@ function GallerySection() {
   const gallery = [
     {
       src: "/images/industrial_bookshelf.jpg",
-      alt: "Industrial bookshelf in the Nyumbani workshop",
-      title: "Workshop Layout",
-      text: "Built for calm, durable storage and daily utility.",
+      alt: "Industrial Bookshelf in the Nyumbani workshop",
+      title: "Architectural Shelving",
+      text: "Five-tier matte black steel framing with seasoned solid cypress timber planks.",
       className: "md:col-span-2",
     },
     {
       src: "/images/carved_dining_chair.jpg",
-      alt: "Carved dining chair with a handcrafted finish",
+      alt: "Hand-carved Mahogany Dining Chair",
       title: "Dining Heritage",
-      text: "Solid seats shaped for family gatherings and long evenings.",
+      text: "Solid carved mahogany chair with ergonomic back support and woven upholstery.",
       className: "",
     },
     {
       src: "/images/wrought_iron_bench.jpg",
-      alt: "Wrought iron bench with artisan craftsmanship",
+      alt: "Wrought Iron Garden Bench",
       title: "Outdoor Form",
-      text: "Weather-ready silhouettes designed for daily life.",
+      text: "Weatherproofed cast iron filigree and kiln-dried timber for verandahs and patios.",
       className: "",
     },
     {
       src: "/images/floating_timber_shelves.jpg",
-      alt: "Floating timber shelves in a finished interior",
+      alt: "Live-Edge Floating Timber Shelves",
       title: "Minimal Living",
-      text: "Clean lines and warm timber that elevate the everyday.",
+      text: "Live-edge seasoned hardwood shelves with heavy-duty concealed wall mounts.",
       className: "md:col-span-2",
+    },
+    {
+      src: "/images/mvule_coffee_table.jpg",
+      alt: "Mvule Hardwood Coffee Table",
+      title: "Artisan Living",
+      text: "Solid mvule hardwood table with hand-cut butterfly key joinery and matte oil finish.",
+      className: "md:col-span-2",
+    },
+    {
+      src: "/images/teak_cutting_board.jpg",
+      alt: "End-Grain Teak Cutting Board",
+      title: "Culinary Craft",
+      text: "End-grain teak chopping board with natural antibacterial oils and food-safe wax.",
+      className: "",
     },
   ];
 
@@ -458,6 +472,98 @@ function GallerySection() {
 
 // ── Interactive Collection Showcase ────────────────────────────────────
 
+const DEFAULT_WORKSHOP_PIECES: Product[] = [
+  {
+    id: "p-teak-board",
+    name: "Teak Cutting Board",
+    description: "End-grain teak chopping board with natural antibacterial oils and a food-safe wax finish. 40 × 30 cm.",
+    category: "Kitchen",
+    priceKes: 850,
+    stockQty: 25,
+    lowStockThreshold: 6,
+    imageUrl: "/images/teak_cutting_board.jpg",
+  },
+  {
+    id: "p-bookshelf",
+    name: "Industrial Bookshelf",
+    description: "Five-tier architectural shelving unit with matte black steel framing and solid cypress timber planks.",
+    category: "Storage",
+    priceKes: 18500,
+    stockQty: 5,
+    lowStockThreshold: 2,
+    imageUrl: "/images/industrial_bookshelf.jpg",
+  },
+  {
+    id: "p-dining-chair",
+    name: "Carved Dining Chair",
+    description: "Hand-carved solid mahogany dining chair with curved back support and textured woven upholstery.",
+    category: "Dining",
+    priceKes: 4500,
+    stockQty: 12,
+    lowStockThreshold: 4,
+    imageUrl: "/images/carved_dining_chair.jpg",
+  },
+  {
+    id: "p-floating-shelf",
+    name: "Floating Wall Shelf",
+    description: "Live-edge seasoned hardwood floating shelves with heavy-duty concealed wall mounts. Set of 3.",
+    category: "Storage",
+    priceKes: 2200,
+    stockQty: 18,
+    lowStockThreshold: 5,
+    imageUrl: "/images/floating_timber_shelves.jpg",
+  },
+  {
+    id: "p-garden-bench",
+    name: "Garden Bench",
+    description: "Weather-resistant cast iron filigree frame and kiln-dried treated timber bench for verandahs and patios.",
+    category: "Outdoor",
+    priceKes: 9800,
+    stockQty: 3,
+    lowStockThreshold: 2,
+    imageUrl: "/images/wrought_iron_bench.jpg",
+  },
+  {
+    id: "p-coffee-table",
+    name: "Mvule Coffee Table",
+    description: "Solid mvule hardwood coffee table with artisan butterfly key joinery and organic matte oil finish.",
+    category: "Living Room",
+    priceKes: 14500,
+    stockQty: 4,
+    lowStockThreshold: 2,
+    imageUrl: "/images/mvule_coffee_table.jpg",
+  },
+];
+
+const PRODUCT_DESC_FALLBACKS: Record<string, string> = {
+  "cutting board": "End-grain teak chopping board with natural antibacterial oils and a food-safe wax finish. 40 × 30 cm.",
+  "teak": "End-grain teak chopping board with natural antibacterial oils and a food-safe wax finish. 40 × 30 cm.",
+  "bookshelf": "Five-tier architectural shelving unit with matte black steel framing and solid cypress timber planks.",
+  "dining chair": "Hand-carved solid mahogany dining chair with curved back support and textured woven upholstery.",
+  "dining": "Hand-carved solid mahogany dining chair with curved back support and textured woven upholstery.",
+  "chair": "Hand-carved solid mahogany dining chair with curved back support and textured woven upholstery.",
+  "shelf": "Live-edge seasoned hardwood floating shelves with heavy-duty concealed wall mounts. Set of 3.",
+  "shelves": "Live-edge seasoned hardwood floating shelves with heavy-duty concealed wall mounts. Set of 3.",
+  "floating": "Live-edge seasoned hardwood floating shelves with heavy-duty concealed wall mounts. Set of 3.",
+  "garden bench": "Weather-resistant cast iron filigree frame and kiln-dried treated timber bench for verandahs and patios.",
+  "bench": "Weather-resistant cast iron filigree frame and kiln-dried treated timber bench for verandahs and patios.",
+  "coffee table": "Solid mvule hardwood coffee table with artisan butterfly key joinery and organic matte oil finish.",
+  "mvule": "Solid mvule hardwood coffee table with artisan butterfly key joinery and organic matte oil finish.",
+};
+
+function resolveProductDescription(product: Product): string {
+  if (product.description && product.description.trim().length > 15) {
+    return product.description;
+  }
+  const lowerName = (product.name || "").toLowerCase();
+  for (const [key, desc] of Object.entries(PRODUCT_DESC_FALLBACKS)) {
+    if (lowerName.includes(key)) {
+      return desc;
+    }
+  }
+  return product.description || "Handcrafted solid timber furniture piece made in our workshop.";
+}
+
 function CollectionSection({
   onOrder,
 }: {
@@ -469,11 +575,16 @@ function CollectionSection({
   });
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
+  const effectiveProducts = useMemo(() => {
+    if (products && products.length > 0) return products;
+    return DEFAULT_WORKSHOP_PIECES;
+  }, [products]);
+
   const categories = useMemo(
-    () => ["All", ...new Set((products ?? []).map((p) => p.category ?? "Other"))],
-    [products]
+    () => ["All", ...new Set(effectiveProducts.map((p) => p.category ?? "Other"))],
+    [effectiveProducts]
   );
-  const visibleProducts = (products ?? []).filter(
+  const visibleProducts = effectiveProducts.filter(
     (p) => activeCategory === "All" || p.category === activeCategory || (!p.category && activeCategory === "Other")
   );
 
@@ -543,7 +654,7 @@ function CollectionSection({
                       )}
                     </div>
                     <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted">
-                      {product.description || "Handcrafted timber furniture piece."}
+                      {resolveProductDescription(product)}
                     </p>
                     <div className="mt-5 flex items-center justify-between border-t border-sand-100 pt-5">
                       <span className="font-display text-lg font-semibold text-ink">

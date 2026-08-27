@@ -11,8 +11,7 @@ const productInput = z.object({
   priceKes: z.number().int().positive(),
   stockQty: z.number().int().min(0),
   lowStockThreshold: z.number().int().min(0).default(3),
-  imageUrl: z.string().url().optional().nullable(),
-  visible: z.boolean().default(true),
+  imageUrl: z.string().optional().nullable(),
 });
 
 export async function publicProductRoutes(app: FastifyInstance): Promise<void> {
