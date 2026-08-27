@@ -14,6 +14,6 @@ process.env.NODE_ENV = "development";
 process.env.DATABASE_URL = TEST_DB_URL;
 delete process.env.AT_API_KEY;
 delete process.env.GEMINI_API_KEY;
-delete process.env.DARAJA_CONSUMER_KEY;
-delete process.env.DARAJA_CONSUMER_SECRET;
+process.env.DARAJA_CONSUMER_KEY = "";
+process.env.DARAJA_CONSUMER_SECRET = "";
 delete process.env.PUBLIC_BASE_URL;
