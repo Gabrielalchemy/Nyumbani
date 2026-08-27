@@ -1,0 +1,4 @@
+- [ ]  **Africa's Talking USSD (`*384*38239#`):** Session state machine handling paginated product catalog browsing, ordering, and customer order history lookup on any feature phone or smartphone.
+- [ ] **Safaricom Daraja M-Pesa STK Push:** Direct `Lipa na M-Pesa Online` prompt pushed to customer phones upon order placement with automatic OAuth token caching.
+- [ ] **Webhook Engine (`/webhooks/mpesa`):** Idempotent payment finalization automatically updating order status to `PAID` and sending customer receipts.
+- [ ] **Automated SMS Pulse:** Instant customer order receipts, owner sales alerts, and low-stock threshold warnings (`checkLowStockAlerts`).

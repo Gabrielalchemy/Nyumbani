@@ -125,6 +125,7 @@ enum DocStatus {
 model Document {
   id         String    @id @default(cuid())
   filename   String
+  storedName String?
   mimeType   String
   sizeBytes  Int
   kind       String    @default("invoice")
@@ -163,7 +164,6 @@ enum UssdScreen {
   PRODUCT_DETAIL
   ORDER_QTY
   ORDER_CONFIRM
-  ORDER_PAID_PROMPT
   MY_ORDERS
   CONTACT
 }

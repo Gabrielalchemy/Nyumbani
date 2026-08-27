@@ -44,7 +44,7 @@ cp .env.example .env            # single root .env — the API walks up to find 
 # Postgres: either…
 docker compose up -d db         # …or any local postgres; set DATABASE_URL accordingly
 
-pnpm --filter @nyumbani/api migrate:dev
+pnpm db:migrate:dev
 pnpm db:seed
 pnpm dev                        # api :3000 + web :5173 (vite proxies /api)
 ```
@@ -108,7 +108,7 @@ curl -X POST localhost:3000/ussd/callback \
 
 ## Design notes
 
-Warm craft-industrial identity: Fraunces display serif over Inter, paper/sand surfaces, terracotta accents, procedural wood-grain placeholders (SVG-free CSS grain). Motion follows a single easing curve family with scroll-triggered staggers; `prefers-reduced-motion` respected.
+Warm craft-industrial identity: Playfair Display & Fraunces display serifs over Inter, paper/sand surfaces, terracotta accents, procedural wood-grain placeholders (SVG-free CSS grain). Motion follows a single easing curve family with scroll-triggered staggers; `prefers-reduced-motion` respected.
 
 ---
 

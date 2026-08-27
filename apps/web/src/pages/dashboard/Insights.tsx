@@ -3,12 +3,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
+  Download,
   FileText,
   MessageSquareText,
   Sparkles,
   UploadCloud,
 } from "lucide-react";
-import { api, kes } from "../../lib/api";
+import { api, getToken, kes } from "../../lib/api";
 import type { DocumentRow, ReportRow } from "../../lib/types";
 import { Badge, Button, Spinner } from "../../components/ui";
 
@@ -17,6 +18,25 @@ export default function Insights() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  async function downloadOriginal(doc: DocumentRow) {
+    try {
+      setDownloadError(null);
+      const res = await fetch(`/api/admin/documents/${doc.id}/file`, {
+        headers: { Authorization: `Bearer ${getToken() ?? ""}` },
+      });
+      if (!res.ok) throw new Error();
+      const url = URL.createObjectURL(await res.blob());
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = doc.filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setDownloadError(`Could not download “${doc.filename}” — original file may be missing.`);
+    }
+  }
 
   const { data: docs } = useQuery({
     queryKey: ["documents"],
@@ -167,12 +187,20 @@ export default function Insights() {
                       ))}
                     </ul>
                     <p className="pt-1 text-right font-semibold">{kes(d.extracted.totalAmount)} total</p>
+                    <div className="flex justify-end pt-2">
+                      <Button variant="secondary" size="sm" onClick={() => downloadOriginal(d)}>
+                        <Download size={14} /> Original
+                      </Button>
+                    </div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.article>
         ))}
+        {downloadError && (
+          <p className="rounded-xl bg-red-50 px-4 py-2 text-xs text-red-700">{downloadError}</p>
+        )}
       </section>
 
       {/* Report */}

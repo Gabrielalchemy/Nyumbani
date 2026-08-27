@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Hammer, PhoneCall, ShieldCheck, Smartphone, X } from "lucide-react";
+import { PhoneCall, Smartphone, X } from "lucide-react";
 import type { Product } from "../lib/types";
 import { api, kes } from "../lib/api";
 import { usePublicConfig } from "../lib/config";
@@ -236,20 +236,3 @@ export function OrderDialog({
   );
 }
 
-/** Small trust strip used under hero */
-export function TrustStrip() {
-  const items = [
-    { icon: Hammer, label: "Handmade to order" },
-    { icon: ShieldCheck, label: "Deposit secured via M-Pesa" },
-    { icon: Smartphone, label: "Order on any phone — no app needed" },
-  ];
-  return (
-    <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft">
-      {items.map(({ icon: Icon, label }) => (
-        <li key={label} className="flex items-center gap-2">
-          <Icon size={16} className="text-clay-600" /> {label}
-        </li>
-      ))}
-    </ul>
-  );
-}

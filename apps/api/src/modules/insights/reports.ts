@@ -150,7 +150,7 @@ async function narrate(m: ReportMetrics): Promise<string> {
 
   try {
     const { text } = await generateText({
-      model: google("gemini-1.5-flash"),
+      model: google("gemini-2.5-flash"),
       prompt: [
         "You are a sharp, encouraging business advisor for a small Kenyan manufacturer.",
         "Write a concise business report (max ~180 words, plain text, no markdown).",

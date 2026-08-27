@@ -102,12 +102,4 @@ export async function adminProductRoutes(app: FastifyInstance): Promise<void> {
       return updated;
     }
   );
-
-  app.get("/stock-movements", async () =>
-    prisma.stockMovement.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 100,
-      include: { product: { select: { name: true } } },
-    })
-  );
 }

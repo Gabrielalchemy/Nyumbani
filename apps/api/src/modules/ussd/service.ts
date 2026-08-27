@@ -100,7 +100,7 @@ async function productList(page: number): Promise<ScreenResult> {
 
   return {
     screen: "PRODUCT_LIST",
-    data: { page, ...(nextOption ? {} : {}) },
+    data: { page },
     end: false,
     text: lines.join("\n"),
   };
@@ -245,8 +245,6 @@ async function confirmOrder(
           status: "INITIATED",
         },
       });
-    } else {
-      await sendSmsFallbackForFailedCheckout(phone);
     }
 
     return {
@@ -260,10 +258,6 @@ async function confirmOrder(
     const msg = err instanceof Error ? err.message : "Something went wrong";
     return { screen: "CONTACT", end: true, text: `Sorry: ${msg}` };
   }
-}
-
-async function sendSmsFallbackForFailedCheckout(_phone: string): Promise<void> {
-  /* owner notified via placeOrder flow; customer told in END text */
 }
 
 // ── Router ─────────────────────────────────────────────────────────────

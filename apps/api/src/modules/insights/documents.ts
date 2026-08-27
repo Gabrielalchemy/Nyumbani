@@ -1,3 +1,4 @@
+import { createReadStream } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { randomBytes } from "node:crypto";
@@ -57,6 +58,7 @@ export async function adminInsightRoutes(app: FastifyInstance): Promise<void> {
     const doc = await prisma.document.create({
       data: {
         filename: file.filename,
+        storedName,
         mimeType: file.mimetype,
         sizeBytes: buf.byteLength,
         kind: "invoice",
@@ -74,7 +76,7 @@ export async function adminInsightRoutes(app: FastifyInstance): Promise<void> {
 
     try {
       const { object } = await generateObject({
-        model: google("gemini-1.5-flash"),
+        model: google("gemini-2.5-flash"),
         schema: invoiceSchema,
         messages: [
           {
@@ -116,4 +118,22 @@ export async function adminInsightRoutes(app: FastifyInstance): Promise<void> {
   app.get("/documents", async () =>
     prisma.document.findMany({ orderBy: { createdAt: "desc" }, take: 100 })
   );
+
+  /** Download the original uploaded file (owner-only). */
+  app.get<{ Params: { id: string } }>("/documents/:id/file", async (req, reply) => {
+    const doc = await prisma.document.findUnique({ where: { id: req.params.id } });
+    if (!doc?.storedName) return reply.code(404).send({ error: "File not found" });
+
+    const path = resolve(UPLOAD_DIR, doc.storedName);
+    if (!path.startsWith(UPLOAD_DIR + "/")) {
+      return reply.code(400).send({ error: "Invalid document reference" });
+    }
+    return reply
+      .header("Content-Type", doc.mimeType)
+      .header(
+        "Content-Disposition",
+        `attachment; filename*=UTF-8''${encodeURIComponent(doc.filename)}`
+      )
+      .send(createReadStream(path));
+  });
 }

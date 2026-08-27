@@ -1,0 +1,4 @@
+- [x] **Fastify 5 + Prisma 6 + PostgreSQL:** Monorepo architecture (`@nyumbani/api` & `@nyumbani/web`)
+- [ ] **Atomic Stock Control:** Database transaction safeguards (`stockQty: { gte: item.qty }`) to guarantee **zero overselling** during concurrent high-volume traffic.
+- [ ] **Single-Admin OTP Authentication:** Secured dashboard login using phone SMS codes (`OtpCode` table with 5-minute TTL).
+- [ ] **Data Models:** `Product`, `Customer`, `Order`, `OrderItem`, `Payment`, `StockMovement`, `Document`, `Report`, `OtpCode`, `UssdSession`.

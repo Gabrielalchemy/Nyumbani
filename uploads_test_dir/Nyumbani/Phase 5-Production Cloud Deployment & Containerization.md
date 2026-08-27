@@ -1,0 +1,3 @@
+- [ ] - **Single Container Packaging:** Multi-stage `Dockerfile` bundling both API and web SPA into a single Node process on port `3000`.
+- [ ] **Database Migrations:** Automatic `prisma migrate deploy` execution on container boot.
+- [ ] **Railway / Docker Host Deployment:** Provisioning managed PostgreSQL, configuring environment variables, and establishing public HTTPS endpoints for callback hooks.

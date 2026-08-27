@@ -1,0 +1,314 @@
+{
+  "main": {
+    "id": "1d787602e901e109",
+    "type": "split",
+    "children": [
+      {
+        "id": "c8953a478fa383c8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a9d8978e4633898e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "NYUMBANI.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "NYUMBANI"
+            }
+          },
+          {
+            "id": "9f8c9991883b18c1",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Phase 1-Core Architecture & Database Schema.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Phase 1-Core Architecture & Database Schema"
+            }
+          },
+          {
+            "id": "c1290d903d19cb78",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Phase 2-Telephony Integrations — USSD & M-Pesa.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Phase 2-Telephony Integrations — USSD & M-Pesa"
+            }
+          },
+          {
+            "id": "e01c2f181fd61e96",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Phase 3-AI Business Insights & Expense Tracking.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Phase 3-AI Business Insights & Expense Tracking"
+            }
+          },
+          {
+            "id": "e986b96ce736214b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Phase 4-Storefront & Admin Dashboard UX.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Phase 4-Storefront & Admin Dashboard UX"
+            }
+          },
+          {
+            "id": "2ea07d512ffe795a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Phase 5-Production Cloud Deployment & Containerization.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Phase 5-Production Cloud Deployment & Containerization"
+            }
+          },
+          {
+            "id": "8be458cdbcfeb9b2",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Phase 5-Production Cloud Deployment & Containerization.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Phase 5-Production Cloud Deployment & Containerization"
+            }
+          },
+          {
+            "id": "658447928df7d0e7",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Phase 1-Core Architecture & Database Schema.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Phase 1-Core Architecture & Database Schema"
+            }
+          }
+        ],
+        "currentTab": 7
+      },
+      {
+        "id": "8e09e5ca5939061a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3c1c54b14755f845",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "23e8dc2b41a50186",
+    "type": "split",
+    "children": [
+      {
+        "id": "0ae9988274f9e625",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1aff863ccd6a0e8d",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "163fae5f838399fe",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "547bc7e9d750e400",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "994b3825b388fe7c",
+    "type": "split",
+    "children": [
+      {
+        "id": "483ec886f16ee750",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ffe6dfd9dbee8574",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "8f1496a95885662e",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "c5e8693f9aefccba",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "fe1e4d84d2cc48e5",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "37cc3959a4a5f389",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "658447928df7d0e7",
+  "lastOpenFiles": [
+    "running.md",
+    "Phase 5-Production Cloud Deployment & Containerization.md",
+    "Phase 6-Africa's Talking Marketplace & Scale.md",
+    "Phase 4-Storefront & Admin Dashboard UX.md",
+    "Phase 3-AI Business Insights & Expense Tracking.md",
+    "Phase 2-Telephony Integrations — USSD & M-Pesa.md",
+    "Phase 1-Core Architecture & Database Schema.md",
+    "NYUMBANI.md"
+  ]
+}

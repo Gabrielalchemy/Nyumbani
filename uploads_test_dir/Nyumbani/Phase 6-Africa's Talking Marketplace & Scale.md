@@ -1,0 +1,3 @@
+- [ ] - **Single-Tenant Deployment Model:** Packaging Nyumbani as a re-deployable plugin for individual African makers and _jua kali_ artisans.
+- [ ] **Marketplace Listing:** Submission via Africa's Talking _Create Your Own Plugin_ portal (slug `nyumbani`, branding assets, pricing plans).
+- [ ] **Custom Domain & Multi-Location Support:** Enabling custom domain binding and multi-workshop inventory tracking.

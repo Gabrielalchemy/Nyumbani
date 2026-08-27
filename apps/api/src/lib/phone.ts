@@ -21,9 +21,3 @@ export function normalizeKenyanPhone(raw: string): string {
   }
   return `+${e164}`;
 }
-
-/** Mask a phone for display: +2547XX XXX XXX */
-export function formatPhone(e164: string): string {
-  const d = e164.replace(/\D/g, "");
-  return `+${d.slice(0, 6)} ${d.slice(6, 9)} ${d.slice(9)}`;
-}
