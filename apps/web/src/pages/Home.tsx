@@ -180,17 +180,22 @@ function HeroSection() {
           className="relative mx-auto aspect-[4/5] w-full max-w-md lg:max-w-none"
         >
           {/* Main Editorial Image Card */}
-          <div className="woodgrain absolute inset-0 overflow-hidden rounded-3xl shadow-card" style={grainStyle(0)}>
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent" />
+          <div className="relative h-full w-full overflow-hidden rounded-3xl border border-sand-200 shadow-card">
+            <img
+              src="/images/teak_cutting_board.jpg"
+              alt="Handcrafted Teak Cutting Board"
+              className="h-full w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-transparent to-transparent" />
             <div className="absolute bottom-8 left-8 right-8 text-paper">
               <p className="text-xs font-bold tracking-widest text-clay-300 uppercase">
                 Artisan Series
               </p>
               <h3 className="mt-1 font-display text-2xl font-semibold">
-                Mvule Coffee Table
+                End-Grain Teak Board
               </h3>
               <p className="mt-1 text-xs text-paper/80">
-                110 × 60 × 45 cm · Hand-rubbed organic oil
+                40 × 30 cm · Hand-rubbed organic food-safe oil
               </p>
             </div>
           </div>
@@ -371,6 +376,86 @@ function FeaturesSection() {
   );
 }
 
+// ── Image Gallery / Workshop Story ────────────────────────────────────
+
+function GallerySection() {
+  const gallery = [
+    {
+      src: "/images/industrial_bookshelf.jpg",
+      alt: "Industrial bookshelf in the Nyumbani workshop",
+      title: "Workshop Layout",
+      text: "Built for calm, durable storage and daily utility.",
+      className: "md:col-span-2",
+    },
+    {
+      src: "/images/carved_dining_chair.jpg",
+      alt: "Carved dining chair with a handcrafted finish",
+      title: "Dining Heritage",
+      text: "Solid seats shaped for family gatherings and long evenings.",
+      className: "",
+    },
+    {
+      src: "/images/wrought_iron_bench.jpg",
+      alt: "Wrought iron bench with artisan craftsmanship",
+      title: "Outdoor Form",
+      text: "Weather-ready silhouettes designed for daily life.",
+      className: "",
+    },
+    {
+      src: "/images/floating_timber_shelves.jpg",
+      alt: "Floating timber shelves in a finished interior",
+      title: "Minimal Living",
+      text: "Clean lines and warm timber that elevate the everyday.",
+      className: "md:col-span-2",
+    },
+  ];
+
+  return (
+    <section className="bg-paper py-28 lg:py-36">
+      <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12">
+        <Reveal>
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-xs font-bold tracking-[0.22em] text-clay-600 uppercase">
+                Shop the Feeling
+              </p>
+              <h2 className="mt-3 font-display text-4xl font-normal tracking-tight text-ink sm:text-5xl">
+                A closer look at the pieces we make.
+              </h2>
+            </div>
+            <p className="max-w-xl text-base leading-relaxed text-muted">
+              Every bed, bench, and shelf starts with carefully selected hardwood and ends with a finish that feels human.
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {gallery.map((image, index) => (
+            <Reveal key={image.title} delay={index * 0.08} className={image.className}>
+              <figure className="group relative h-[340px] overflow-hidden rounded-3xl border border-sand-200 bg-sand-100 shadow-card transition-transform duration-500 hover:-translate-y-1 hover:shadow-lift">
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent" />
+                <figcaption className="absolute inset-x-0 bottom-0 p-6 text-paper">
+                  <p className="text-[10px] font-bold tracking-[0.2em] text-clay-200 uppercase">
+                    {image.title}
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-paper/80">
+                    {image.text}
+                  </p>
+                </figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── Interactive Collection Showcase ────────────────────────────────────
 
 function CollectionSection({
@@ -487,13 +572,19 @@ function CraftSection() {
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <Reveal>
-            <div className="woodgrain relative aspect-[4/3] overflow-hidden rounded-3xl shadow-card" style={grainStyle(3)}>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-sand-200 shadow-card">
+              <img
+                src="/images/floating_timber_shelves.jpg"
+                alt="Floating Timber Shelves Craftsmanship"
+                className="h-full w-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-transparent to-transparent" />
               <div className="absolute inset-x-8 bottom-8 rounded-2xl border border-white/40 bg-white/90 p-6 backdrop-blur">
                 <p className="font-display text-xl font-semibold text-ink">
                   Every joint inspected twice.
                 </p>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted">
-                  Mortise and tenon joinery built to endure generations. One year workshop warranty included.
+                  Solid hardwood joinery built to endure generations. One year workshop warranty included.
                 </p>
               </div>
             </div>
@@ -607,6 +698,7 @@ export default function Home() {
       <HeroSection />
       <SocialProofSection />
       <FeaturesSection />
+      <GallerySection />
       <CollectionSection
         onOrder={(product, index) => setSelectedProduct({ product, index })}
       />

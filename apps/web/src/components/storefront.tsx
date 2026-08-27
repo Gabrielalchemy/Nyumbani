@@ -30,6 +30,19 @@ export function ProductImage({
   index: number;
   className?: string;
 }) {
+  if (product.imageUrl) {
+    return (
+      <div className={`relative overflow-hidden bg-sand-100 ${className}`}>
+        <img
+          src={product.imageUrl}
+          alt={product.name}
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/35 to-transparent" />
+      </div>
+    );
+  }
+
   return (
     <div className={`woodgrain relative overflow-hidden ${className}`} style={grainStyle(index)}>
       <span className="absolute inset-0 flex items-center justify-center">
