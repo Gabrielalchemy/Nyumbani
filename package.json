@@ -11,6 +11,7 @@
     "db:migrate": "pnpm --filter @nyumbani/api migrate",
     "db:migrate:dev": "pnpm --filter @nyumbani/api migrate:dev",
     "db:seed": "pnpm --filter @nyumbani/api seed",
+    "test": "pnpm -r test",
     "build": "pnpm -r build",
     "start": "pnpm --filter @nyumbani/api start"
   },
