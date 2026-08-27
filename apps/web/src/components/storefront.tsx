@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { PhoneCall, Smartphone, X } from "lucide-react";
 import type { Product } from "../lib/types";
@@ -62,6 +62,17 @@ export function OrderDialog({
   const [orderRef, setOrderRef] = useState<string | null>(null);
   const [paidStatus, setPaidStatus] = useState<boolean>(false);
   const cfg = usePublicConfig();
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Clean up polling interval on unmount or when dialog closes
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+    };
+  }, []);
 
   async function submit() {
     if (!product) return;
@@ -82,10 +93,11 @@ export function OrderDialog({
 
       if (res.checkoutPushed && res.reference) {
         let count = 0;
-        const interval = setInterval(async () => {
+        pollRef.current = setInterval(async () => {
           count++;
           if (count > 20) {
-            clearInterval(interval);
+            clearInterval(pollRef.current!);
+            pollRef.current = null;
             return;
           }
           try {
@@ -97,7 +109,8 @@ export function OrderDialog({
               setMessage(
                 `Payment confirmed via M-Pesa! Order ${res.reference} is now confirmed and being processed.`
               );
-              clearInterval(interval);
+              clearInterval(pollRef.current!);
+              pollRef.current = null;
             }
           } catch {
             /* continue polling silently */
